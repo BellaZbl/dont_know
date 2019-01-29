@@ -40,7 +40,7 @@ def get_batches(x1,x2,y,batch_size):
     data_len=len(x1)
     batch_total=int(data_len/batch_size)+1
     start_id=0
-    for i in range(batch_size+1):
+    for i in range(batch_total+1):
         batch_x1=x1[start_id:min(start_id+batch_size,data_len)]
         batch_x2=x2[start_id:min(start_id+batch_size,data_len)]
         batch_y=y[start_id:min(start_id+batch_size,data_len)]
