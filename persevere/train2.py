@@ -40,7 +40,7 @@ def get_batches(x1,x2,y,batch_size):
     data_len=len(x1)
     batch_total=int(data_len/batch_size)+1
     start_id=0
-    for i in range(batch_size+1):
+    for i in range(batch_total+1):
         batch_x1=x1[start_id:min(start_id+batch_size,data_len)]
         batch_x2=x2[start_id:min(start_id+batch_size,data_len)]
         batch_y=y[start_id:min(start_id+batch_size,data_len)]
@@ -62,6 +62,8 @@ l2=0.01
 clip_value=5
 epoch_num=20
 
+x1_devlen=get_len(x1_dev)
+x2_devlen=get_len(x2_dev)
 
 def train():
     sess=tf.Session()
@@ -83,6 +85,18 @@ def train():
                        model.dropout_keep_prob:0.3}
             _, batch_loss, batch_acc, p= sess.run([model.train, model.loss, model.acc ,model.P], feed_dict=feed_dict)
             print(count_num,' epoch:',i,' loss:',round(batch_loss,3),'acc:',round(batch_acc,3),'P:',p)
+
+            if count_num%20==0:
+                dev_feed_dict={model.premise:x1_dev,
+                       model.premise_mask:x1_devlen,
+                       model.hypothesis:x2_dev,
+                       model.hypothesis_mask:x2_devlen,
+                       model.y_input:y_dev,
+                       model.dropout_keep_prob:1.0}
+                batch_loss, batch_acc, p = sess.run([model.loss, model.acc, model.P],feed_dict=dev_feed_dict)
+                print('\ndev:')
+                print(count_num, ' epoch:', i, ' loss:', round(batch_loss, 3), 'acc:', round(batch_acc, 3), 'P:', p,'\n')
+
             count_num+=1
 
 train()
